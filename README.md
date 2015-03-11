@@ -21,7 +21,7 @@ You can use it in two ways.
 Either by using the `ActionBuilder`:
 
     new ActionBuilder<>().
-          // register a ListView
+          // register a Button
           with(myButton).
           // implement the OnClickListener with the given method "setOnClickListener"
           reg(OnClickListener.class, RegActionMethod.SET_ONCLICK).
