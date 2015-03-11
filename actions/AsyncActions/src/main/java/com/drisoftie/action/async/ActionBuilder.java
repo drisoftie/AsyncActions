@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Builder Chain Pattern (also known as Fluent Pattern) implementation to get an {@link AsyncAction}.
- * Facilitates creation of an {@link AsyncAction} in a cascade like way.
+ * Builder Chain Pattern (also known as Fluent Pattern) implementation to get an {@link BaseAsyncAction}.
+ * Facilitates creation of an {@link BaseAsyncAction} in a cascade like way.
  * <p/>
  * Use this class in the following way:
  * <pre>
@@ -48,7 +48,7 @@ public class ActionBuilder<ViewT extends View> {
     /**
      * List of all bindings.
      */
-    private List<AsyncAction.ActionBinding<ViewT>> bindings = new ArrayList<>();
+    private List<BaseAsyncAction.ActionBinding<ViewT>> bindings = new ArrayList<>();
 
     /**
      * Building chain starts registration with <b>optional</b> {@link ViewT}s to bind something to. <b>{@code null}</b> passing is
@@ -93,7 +93,8 @@ public class ActionBuilder<ViewT extends View> {
          * @param <Tag2T>   the type of the second tag
          * @return the new packed action, ready to use
          */
-        public <ResultT, Tag1T, Tag2T> AsyncAction<ViewT, ResultT, Tag1T, Tag2T> pack(AsyncAction<ViewT, ResultT, Tag1T, Tag2T> action) {
+        public <ResultT, Tag1T, Tag2T> BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> pack(
+                BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> action) {
             action.registerAction(bindings);
             bindings = null;
             return action;
@@ -112,7 +113,7 @@ public class ActionBuilder<ViewT extends View> {
         /**
          * Cached bindings to use when ready.
          */
-        protected List<AsyncAction.ActionBinding<ViewT>> subBindings = new ArrayList<>();
+        protected List<BaseAsyncAction.ActionBinding<ViewT>> subBindings = new ArrayList<>();
 
         /**
          * Default constructor.
@@ -149,10 +150,10 @@ public class ActionBuilder<ViewT extends View> {
          */
         protected void init(ViewT... targets) {
             if (ArrayUtils.isEmpty(targets)) {
-                subBindings.add(new AsyncAction.ActionBinding<ViewT>());
+                subBindings.add(new BaseAsyncAction.ActionBinding<ViewT>());
             } else {
                 for (ViewT target : targets) {
-                    subBindings.add(new AsyncAction.ActionBinding<ViewT>().setView(target));
+                    subBindings.add(new BaseAsyncAction.ActionBinding<ViewT>().setView(target));
                 }
             }
         }
@@ -165,7 +166,7 @@ public class ActionBuilder<ViewT extends View> {
          * @return the next builder in the chain
          */
         public TargetFinishBuilder reg(Class<?> clazz, String regMethod) {
-            for (AsyncAction.ActionBinding<ViewT> binding : subBindings) {
+            for (BaseAsyncAction.ActionBinding<ViewT> binding : subBindings) {
                 binding.registrations.add(new MutableTriple<Class<?>, String, String[]>(clazz, regMethod, null));
             }
             return new TargetFinishBuilder().setBuilder(builder).setBindings(subBindings);
@@ -179,7 +180,7 @@ public class ActionBuilder<ViewT extends View> {
          * @return the next builder in the chain
          */
         public TargetFinishBuilder reg(Class<?> clazz, RegActionMethod regMethod) {
-            for (AsyncAction.ActionBinding<ViewT> binding : subBindings) {
+            for (BaseAsyncAction.ActionBinding<ViewT> binding : subBindings) {
                 binding.registrations.add(new MutableTriple<Class<?>, String, String[]>(clazz, regMethod.method(), null));
             }
             return new TargetFinishBuilder().setBuilder(builder).setBindings(subBindings);
@@ -193,7 +194,7 @@ public class ActionBuilder<ViewT extends View> {
          * @return the next builder in the chain
          */
         public TargetFinishBuilder reg(Class<?>[] classes, RegActionMethod regMethod) {
-            for (AsyncAction.ActionBinding<ViewT> binding : subBindings) {
+            for (BaseAsyncAction.ActionBinding<ViewT> binding : subBindings) {
                 for (Class<?> clazz : classes) {
                     binding.registrations.add(new MutableTriple<Class<?>, String, String[]>(clazz, regMethod.method(), null));
                 }
@@ -209,7 +210,7 @@ public class ActionBuilder<ViewT extends View> {
          * @return the next builder in the chain
          */
         public TargetFinishBuilder reg(Pair<Class<?>, RegActionMethod>... classRegPairs) {
-            for (AsyncAction.ActionBinding<ViewT> binding : subBindings) {
+            for (BaseAsyncAction.ActionBinding<ViewT> binding : subBindings) {
                 for (Pair<Class<?>, RegActionMethod> pair : classRegPairs) {
                     binding.registrations.add(
                             new MutableTriple<Class<?>, String, String[]>(
@@ -252,7 +253,7 @@ public class ActionBuilder<ViewT extends View> {
          * @param bindings the bindings to set
          * @return next builder in the chain
          */
-        protected TargetFinishBuilder setBindings(List<AsyncAction.ActionBinding<ViewT>> bindings) {
+        protected TargetFinishBuilder setBindings(List<BaseAsyncAction.ActionBinding<ViewT>> bindings) {
             subBindings = bindings;
             return this;
         }
@@ -282,7 +283,7 @@ public class ActionBuilder<ViewT extends View> {
                 for (int i = 0; i < methods.length; i++) {
                     methods[i] = actionMethods[i].method();
                 }
-                for (AsyncAction.ActionBinding<ViewT> binding : subBindings) {
+                for (BaseAsyncAction.ActionBinding<ViewT> binding : subBindings) {
                     for (Triple<Class<?>, String, String[]> tuple : binding.registrations) {
                         ((MutableTriple<Class<?>, String, String[]>) tuple).setRight(methods);
                     }
@@ -303,7 +304,8 @@ public class ActionBuilder<ViewT extends View> {
          * @param <Tag2T>   the type of the second tag
          * @return the new packed action, ready to use
          */
-        public <ResultT, Tag1T, Tag2T> AsyncAction<ViewT, ResultT, Tag1T, Tag2T> pack(AsyncAction<ViewT, ResultT, Tag1T, Tag2T> action) {
+        public <ResultT, Tag1T, Tag2T> BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> pack(
+                BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> action) {
             bindings.addAll(subBindings);
             action.registerAction(bindings);
             bindings = null;

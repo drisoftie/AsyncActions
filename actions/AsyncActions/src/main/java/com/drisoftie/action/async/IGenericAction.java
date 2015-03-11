@@ -17,7 +17,7 @@
 package com.drisoftie.action.async;
 
 /**
- * A generic action interface that can be used to invoke any kind of action. Used in conjunction with an {@link com.drisoftie.action.async.AsyncAction} to invoke
+ * A generic action interface that can be used to invoke any kind of action. Used in conjunction with an {@link com.drisoftie.action.async.android.AndroidAction} to invoke
  * itself.
  *
  * @author Alexander Dridiger

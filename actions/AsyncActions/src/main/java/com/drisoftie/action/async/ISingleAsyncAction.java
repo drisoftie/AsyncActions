@@ -36,7 +36,7 @@ public interface ISingleAsyncAction<ViewT, ResultT, Tag1T, Tag2T> extends IAsync
      *
      * @param bindings the bindings to register the action
      */
-    void registerAction(List<AsyncAction.ActionBinding<ViewT>> bindings);
+    void registerAction(List<BaseAsyncAction.ActionBinding<ViewT>> bindings);
 
     /**
      * For invoking the action manually, if it implements an {@link com.drisoftie.action.async.IGenericAction} Interface.

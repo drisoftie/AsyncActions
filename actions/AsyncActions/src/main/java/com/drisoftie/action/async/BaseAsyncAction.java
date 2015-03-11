@@ -16,8 +16,11 @@
  */
 package com.drisoftie.action.async;
 
+import android.util.Log;
+
 import com.drisoftie.action.async.handler.IFinishedHandler;
 import com.drisoftie.action.async.thread.BaseRunThread;
+import com.sony.eu.stc.actions.BuildConfig;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,7 +55,7 @@ import java.util.List;
  * <pre>
  * {@code
  * 	// this action applies to a View and its OnClickListener. It has no tags, no result and no method filters.
- * 	AsyncAction<View, Void, Void, Void> action = new AsyncAction<View, Void, Void, Void>(myView, OnClickListener.class,
+ * 	BaseAsyncAction<View, Void, Void, Void> action = new BaseAsyncAction<View, Void, Void, Void>(myView, OnClickListener.class,
  *                  // method to register the callback
  *                  "setOnClickListener") {
  *
@@ -77,7 +80,8 @@ import java.util.List;
  * <pre>
  * {@code
  * 	// this action applies to a Button and its OnClickListener. It has method filters and tags.
- * 	AsyncAction<Button, Point, Animations, Void> action = new AsyncAction<Button, Point, Animations, Void>(myButton, OnClickListener.class,
+ * 	BaseAsyncAction<Button, Point, Animations, Void> action = new BaseAsyncAction<Button, Point, Animations, Void>(myButton,
+ * 	                OnClickListener.class,
  *                  // registration method
  *                  "setOnClickListener",
  *                  // allow only onClick methods to pass, filter
@@ -108,7 +112,7 @@ import java.util.List;
  * {@code
  * 	// this action applies to a Button and its OnClickListener, additionally it implements another generic Interface. It has method filters
  * 	// and tags.
- * 	AsyncAction<Button, Point, Animation, Void> action = new AsyncAction<Button, Point, Animation, Void>(myButton,
+ * 	BaseAsyncAction<Button, Point, Animation, Void> action = new BaseAsyncAction<Button, Point, Animation, Void>(myButton,
  * 	                new Class[] { OnClickListener.class, IGenericInterface.class},
  *                  // registration method
  *                  "setOnClickListener",
@@ -206,7 +210,7 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
      * @param actionTypes   an {@link java.lang.reflect.Array} of Java Interfaces this {@link com.drisoftie.action.async.BaseAsyncAction}
      *                      implements
      * @param regMethodName the name of the registration {@link java.lang.reflect.Method} used to bind this
-     *                      {@link com.drisoftie.action.async.AsyncAction} to the given {@link android.view.View}; case sensitive;
+     *                      {@link com.drisoftie.action.async.BaseAsyncAction} to the given {@link android.view.View}; case sensitive;
      *                      <b>MUST</b> be of the signature regMethodName(ActionType actionType); tries to bind every given
      *                      {@code actionType} to the given {@link android.view.View}
      */
@@ -222,7 +226,7 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
      * @param actionTypes   an {@link java.lang.reflect.Array} of Java Interfaces this {@link com.drisoftie.action.async.BaseAsyncAction}
      *                      implements
      * @param regMethodName the name of the registration {@link java.lang.reflect.Method} used to bind this
-     *                      {@link com.drisoftie.action.async.AsyncAction} to the given {@link android.view.View}; case sensitive;
+     *                      {@link com.drisoftie.action.async.BaseAsyncAction} to the given {@link android.view.View}; case sensitive;
      *                      <b>MUST</b> be of the signature regMethodName(ActionType actionType); tries to bind every given
      *                      {@code actionType} to the given {@link android.view.View}
      */
@@ -239,7 +243,8 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
      * @param actionTypes       an {@link java.lang.reflect.Array} of Java Interfaces this
      *                          {@link com.drisoftie.action.async.BaseAsyncAction} implements
      * @param regMethodName     the name of the registration {@link java.lang.reflect.Method} used to bind this
-     *                          {@link com.drisoftie.action.async.AsyncAction} to the given {@link android.view.View}; case sensitive;
+     *                          {@link com.drisoftie.action.async.BaseAsyncAction} to the given {@link android.view.View}; case
+     *                          sensitive;
      *                          <b>MUST</b> be of the signature regMethodName(ActionType actionType); tries to bind every given
      *                          {@code actionType} to the given {@link android.view.View}
      * @param actionMethodNames can be {@code null}; the names of the {@link java.lang.reflect.Method}s that should be invoked,
@@ -258,7 +263,8 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
      * @param actionTypes       an {@link java.lang.reflect.Array} of Java Interfaces this
      *                          {@link com.drisoftie.action.async.BaseAsyncAction} implements
      * @param regMethodName     the name of the registration {@link java.lang.reflect.Method} used to bind this
-     *                          {@link com.drisoftie.action.async.AsyncAction} to the given {@link android.view.View}; case sensitive;
+     *                          {@link com.drisoftie.action.async.BaseAsyncAction} to the given {@link android.view.View}; case
+     *                          sensitive;
      *                          <b>MUST</b> be of the signature regMethodName(ActionType actionType); tries to bind every given
      *                          {@code actionType} to the given {@link android.view.View}
      * @param actionMethodNames can be {@code null}; the names of the {@link java.lang.reflect.Method}s that should be invoked,
@@ -277,7 +283,8 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
      * @param actionTypes       an {@link java.lang.reflect.Array} of Java Interfaces this
      *                          {@link com.drisoftie.action.async.BaseAsyncAction} implements
      * @param regMethodName     the name of the registration {@link java.lang.reflect.Method} used to bind this
-     *                          {@link com.drisoftie.action.async.AsyncAction} to the given {@link android.view.View}; case sensitive;
+     *                          {@link com.drisoftie.action.async.BaseAsyncAction} to the given {@link android.view.View}; case
+     *                          sensitive;
      *                          <b>MUST</b> be of the signature regMethodName(ActionType actionType); tries to bind every given
      *                          {@code actionType} to the given {@link android.view.View}
      * @param actionMethodNames can be {@code null}; the names of the {@link java.lang.reflect.Method}s that should be invoked,
@@ -295,7 +302,8 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
      * @param actionTypes       an {@link java.lang.reflect.Array} of Java Interfaces this
      *                          {@link com.drisoftie.action.async.BaseAsyncAction} implements
      * @param regMethodName     the name of the registration {@link java.lang.reflect.Method} used to bind this
-     *                          {@link com.drisoftie.action.async.AsyncAction} to the given {@link android.view.View}; case sensitive;
+     *                          {@link com.drisoftie.action.async.BaseAsyncAction} to the given {@link android.view.View}; case
+     *                          sensitive;
      *                          <b>MUST</b> be of the signature regMethodName(ActionType actionType); tries to bind every given
      *                          {@code actionType} to the given {@link android.view.View}
      * @param actionMethodNames can be {@code null}; the names of the {@link java.lang.reflect.Method}s that should be invoked,
@@ -313,7 +321,8 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
      *                          bound to; if {@code null}, {@code regMethodName} is ignored
      * @param actionType        a single Java Interface this {@link com.drisoftie.action.async.BaseAsyncAction} implements
      * @param regMethodName     the name of the registration {@link java.lang.reflect.Method} used to bind this
-     *                          {@link com.drisoftie.action.async.AsyncAction} to the given {@link android.view.View}; case sensitive;
+     *                          {@link com.drisoftie.action.async.BaseAsyncAction} to the given {@link android.view.View}; case
+     *                          sensitive;
      *                          <b>MUST</b> be of the signature regMethodName(ActionType actionType)
      * @param actionMethodNames can be {@code null}; the names of the {@link java.lang.reflect.Method}s that should be invoked,
      *                          all others will be ignored
@@ -333,7 +342,8 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
      *                          bound to; if {@code null}, {@code regMethodName} is ignored
      * @param actionType        a single Java Interface this {@link com.drisoftie.action.async.BaseAsyncAction} implements
      * @param regMethodName     the name of the registration {@link java.lang.reflect.Method} used to bind this
-     *                          {@link com.drisoftie.action.async.AsyncAction} to the given {@link android.view.View}; case sensitive;
+     *                          {@link com.drisoftie.action.async.BaseAsyncAction} to the given {@link android.view.View}; case
+     *                          sensitive;
      *                          <b>MUST</b> be of the signature regMethodName(ActionType actionType)
      * @param actionMethodNames can be {@code null}; the names of the {@link java.lang.reflect.Method}s that should be invoked,
      *                          all others will be ignored
@@ -355,7 +365,8 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
      * @param actionTypes       an {@link java.lang.reflect.Array} of Java Interfaces this
      *                          {@link com.drisoftie.action.async.BaseAsyncAction} implements
      * @param regMethodName     the name of the registration {@link java.lang.reflect.Method} used to bind this
-     *                          {@link com.drisoftie.action.async.AsyncAction} to the given {@link android.view.View}; case sensitive;
+     *                          {@link com.drisoftie.action.async.BaseAsyncAction} to the given {@link android.view.View}; case
+     *                          sensitive;
      *                          <b>MUST</b> be of the signature regMethodName(ActionType actionType); tries to bind every given
      *                          {@code actionType} to the given {@link android.view.View}
      * @param actionMethodNames can be {@code null}; the names of the {@link java.lang.reflect.Method}s that should be invoked,
@@ -394,7 +405,8 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
      * @param actionTypes       an {@link java.lang.reflect.Array} of Java Interfaces this
      *                          {@link com.drisoftie.action.async.BaseAsyncAction} implements
      * @param regMethodName     the name of the registration {@link java.lang.reflect.Method} used to bind this
-     *                          {@link com.drisoftie.action.async.AsyncAction} to the given {@link android.view.View}; case sensitive;
+     *                          {@link com.drisoftie.action.async.BaseAsyncAction} to the given {@link android.view.View}; case
+     *                          sensitive;
      *                          <b>MUST</b> be of the signature regMethodName(ActionType actionType); tries to bind every given
      *                          {@code actionType} to the given {@link android.view.View}
      * @param actionMethodNames can be {@code null}; the names of the {@link java.lang.reflect.Method}s that should be invoked,
@@ -461,9 +473,10 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
                                 regMethod.invoke(actionBinding.view, actionBinding.actionHandler);
                             }
                         } catch (NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                            // if (BuildConfig.DEBUG) {
-                            // // Log.v("ActionFramework", e.getClass().getName() + " for " + type.getName());
-                            // }
+                            // do nothing if binding fails
+                            if (BuildConfig.DEBUG) {
+                                Log.v(getClass().getSimpleName(), e.getClass().getName() + " for callback" + reg.getLeft().getName());
+                            }
                         }
                     }
                 }
