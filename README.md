@@ -33,8 +33,8 @@ Either by using the `ActionBuilder`:
           pack(new AndroidAction<View, Result, Void, Void>(null, null) {
 
           @Override
-          public Object onActionPrepare(String methodName, Object[] methodArgs, Void tag1, Void tag2,
-                                        Object[] additionalTags) {
+          public Object onActionPrepare(String methodName, Object[] methodArgs, Void tag1,
+                                        Void tag2, Object[] additionalTags) {
               if (ActionMethod.ON_CLICK.matches(methodName)) {
                   // do something when button is clicked, e.g. display progress bar
               } else if (ActionMethod.INVOKE_ACTION.matches(methodName)) {
@@ -44,15 +44,15 @@ Either by using the `ActionBuilder`:
           }
 
           @Override
-          public Result onActionDoWork(String methodName, Object[] methodArgs, Void tag1, Void tag2,
-                                       Object[] additionalTags) {
+          public Result onActionDoWork(String methodName, Object[] methodArgs, Void tag1,
+                                       Void tag2, Object[] additionalTags) {
               // calculate result and return it
               return result;
           }
 
           @Override
-          public void onActionAfterWork(String methodName, Object[] methodArgs, Result workResult, Void tag1,
-                                        Void tag2, Object[] additionalTags) {
+          public void onActionAfterWork(String methodName, Object[] methodArgs, Result workResult,
+                                        Void tag1, Void tag2, Object[] additionalTags) {
               // show user the results
           }
     });
@@ -61,15 +61,17 @@ Or use the `AndroidAction` class and its many constructors itself:
 
     new AndroidAction<View, Result, Void, Void>(button, 
                                                 // implement two interfaces
-                                                new Class[]{OnClickListener.class, IResultHandler.class},
+                                                new Class[]{OnClickListener.class, 
+                                                IResultHandler.class},
                                                 // only one interface needs to be bound to a view
                                                 RegActionMethod.SET_ONCLICK.method()) {
 
           @Override
-          public Object onActionPrepare(String methodName, Object[] methodArgs, Void tag1, Void tag2, 
-                                        Object[]  additionalTags) {
+          public Object onActionPrepare(String methodName, Object[] methodArgs, Void tag1,
+                                        Void tag2, Object[]  additionalTags) {
               if (ActionMethod.ON_CLICK.matches(methodName)) {
-                  // show a dialog when button is clicked, then cancel background threading, because it's not needed
+                  // show a dialog when button is clicked, then cancel background threading,
+                  // because it's not needed
                   skipWorkThreadOnce();
                   return null;
               } else if () {
@@ -79,8 +81,8 @@ Or use the `AndroidAction` class and its many constructors itself:
           }    
 
           @Override
-          public NdefEntity onActionDoWork(String methodName, Object[] methodArgs, Void tag1, Void tag2,
-                                           Object[] additionalTags) {
+          public NdefEntity onActionDoWork(String methodName, Object[] methodArgs, Void tag1,
+                                           Void tag2, Object[] additionalTags) {
               if (ActionMethod.ON_RESULT_READY.matches(methodName)) {
                   // or do something in background with the result
               }
@@ -88,8 +90,8 @@ Or use the `AndroidAction` class and its many constructors itself:
           }
 
           @Override
-          public void onActionAfterWork(String methodName, Object[] methodArgs, Result workResult, Void tag1,
-                                        Void tag2, Object[] additionalTags) {
+          public void onActionAfterWork(String methodName, Object[] methodArgs, Result workResult,
+                                        Void tag1, Void tag2, Object[] additionalTags) {
               // display something to the user
           }
     };
