@@ -31,15 +31,13 @@ import java.util.List;
  * Facilitates creation of an {@link AsyncAction} in a cascade like way.
  * <p/>
  * Use this class in the following way:
- * <p/>
- * <p/>
  * <pre>
  * {@code
- *  new ActionBuilder<View>().with(view)                      // binding a view
- *      .reg(OnClickListener.class, RegActionMethod.SET_ONCLICK) // register an on click callback on the view
- *      .invokeOnly(ActionMethod.ON_CLICK)                       // allow only the onClick method to be
- *                                                               // invoked
- *      .pack(new AsyncAction<View, Void, Void, Void>()          // pack everything inside a new action
+ * new ActionBuilder<View>().with(view)                      // binding a view
+ *     .reg(OnClickListener.class, RegActionMethod.SET_ONCLICK) // register an on click callback on the view
+ *     .invokeOnly(ActionMethod.ON_CLICK)                       // allow only the onClick method to be
+ *                                                              // invoked
+ *     .pack(new AsyncAction<View, Void, Void, Void>()          // pack everything inside a new action
  * }
  * </pre>
  *

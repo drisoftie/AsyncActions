@@ -16,13 +16,11 @@
  */
 package com.drisoftie.action.async;
 
-import android.view.View;
-
 import java.util.List;
 
 /**
  * A generic action interface that defines a single action based on registering and invoking the action in a three way style - preparing the
- * action, executing the action, clean up the action.
+ * action, executing the action, cleaning up the action.
  *
  * @author Alexander Dridiger
  */
@@ -36,21 +34,22 @@ public interface ISingleAsyncAction<ViewT, ResultT, Tag1T, Tag2T> extends IAsync
     /**
      * Possibility to register and implement an action.
      *
-     * @param bindings
+     * @param bindings the bindings to register the action
      */
     void registerAction(List<AsyncAction.ActionBinding<ViewT>> bindings);
 
     /**
      * For invoking the action manually, if it implements an {@link com.drisoftie.action.async.IGenericAction} Interface.
      *
-     * @param methodArgs
+     * @param methodArgs the arguments to invoke the method with
      */
     void invokeSelf(Object... methodArgs);
 
     /**
-     * For invoking the action manually inside the UI {@link Thread}.
+     * For invoking the action manually inside the UI {@link Thread}. Searches for action callbacks of type
+     * {@link com.drisoftie.action.async.IGenericAction} and invokes its {@link IGenericAction#invokeAction(Object...)} method.
      *
-     * @param methodArgs
+     * @param methodArgs the arguments to invoke the action
      */
     void invokeSelfInUiThread(Object... methodArgs);
 
@@ -64,17 +63,18 @@ public interface ISingleAsyncAction<ViewT, ResultT, Tag1T, Tag2T> extends IAsync
     <HandlerT> HandlerT getHandlerImpl(Class<HandlerT> clazz);
 
     /**
-     * Returns the registered handler (implemented Java Interface) as an instance of the {@code clazz} argument of the given {@link android.view.View}.
+     * Returns the registered handler (implemented Java Interface) as an instance of the {@code clazz} argument of the given {@link ViewT}.
      *
-     * @param clazz
+     * @param view  the view the handler is bound to
+     * @param clazz the class to cast to
      * @return the handler or {@code null}
      */
-    <HandlerT> HandlerT getHandlerImpl(View view, Class<HandlerT> clazz);
+    <HandlerT> HandlerT getHandlerImpl(ViewT view, Class<HandlerT> clazz);
 
     /**
      * Replaces the formerly registered {@link ViewT} targets with the given new targets.
      *
-     * @param views
+     * @param views new view targets
      */
     void replaceViewTargets(ViewT... views);
 
@@ -82,7 +82,7 @@ public interface ISingleAsyncAction<ViewT, ResultT, Tag1T, Tag2T> extends IAsync
      * Indicator if the asynchronous work should be done or if invocation should stop after
      * {@link #onActionPrepare(String, Object[], Object, Object, Object[])}.
      *
-     * @param run
+     * @param run if it should run in background
      */
     void setRunWorkThread(boolean run);
 
@@ -101,11 +101,11 @@ public interface ISingleAsyncAction<ViewT, ResultT, Tag1T, Tag2T> extends IAsync
      * However <b>NOTE</b> that {@link #onActionPrepare(String, Object[], Object, Object, Object[])} <b>CAN</b> be invoked <b>OUTSIDE</b>
      * the UI {@link Thread}.
      *
-     * @param methodName
+     * @param methodName     the name of the invoked method
      * @param methodArgs     the arguments provided by the called method {@code methodName}
-     * @param tag1
-     * @param tag2
-     * @param additionalTags
+     * @param tag1           optional tag
+     * @param tag2           optional tag
+     * @param additionalTags optional additional tags
      * @return an <b>optional</b> return value for the implemented {@code actionType}
      */
     Object onActionPrepare(String methodName, Object[] methodArgs, Tag1T tag1, Tag2T tag2, Object[] additionalTags);
@@ -114,11 +114,11 @@ public interface ISingleAsyncAction<ViewT, ResultT, Tag1T, Tag2T> extends IAsync
      * Do work asynchronously.<br>
      * Runs outside the UI {@link Thread}.
      *
-     * @param methodName
+     * @param methodName     the name of the invoked method
      * @param methodArgs     the arguments provided by the called method {@code methodName}
-     * @param tag1
-     * @param tag2
-     * @param additionalTags
+     * @param tag1           optional tag
+     * @param tag2           optional tag
+     * @param additionalTags optional additional tags
      * @return possibility to return a work result for the UI {@link Thread} in
      * {@link #onActionAfterWork(String, Object[], Object, Object, Object, Object[])}
      */
@@ -127,12 +127,27 @@ public interface ISingleAsyncAction<ViewT, ResultT, Tag1T, Tag2T> extends IAsync
     /**
      * Possibility to clean up <b>after</b> asynchronous work. Runs on UI {@link Thread}.
      *
-     * @param methodName
+     * @param methodName     the name of the invoked method
      * @param methodArgs     the arguments provided by the called method {@code methodName}
      * @param workResult     the formerly returned work result
-     * @param tag1
-     * @param tag2
-     * @param additionalTags
+     * @param tag1           optional tag
+     * @param tag2           optional tag
+     * @param additionalTags optional additional tags
      */
     void onActionAfterWork(String methodName, Object[] methodArgs, ResultT workResult, Tag1T tag1, Tag2T tag2, Object[] additionalTags);
+
+    /**
+     * Framework dependent. E.g. in Android it's {@link android.view.View#post(Runnable)}.
+     *
+     * @param view     the view to invoke the runnable from
+     * @param runnable invoke this runnable on the view thread
+     */
+    void invokeRunnableOnViewImpl(ViewT view, Runnable runnable);
+
+    /**
+     * Framework dependent.
+     *
+     * @param runnable invoke this runnable on the ui thread
+     */
+    void invokeRunnableOnUiThread(Runnable runnable);
 }
