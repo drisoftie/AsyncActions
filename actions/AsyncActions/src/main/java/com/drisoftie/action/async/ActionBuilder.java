@@ -162,7 +162,7 @@ public class ActionBuilder<ViewT extends View> {
          * Setting a registration with a handler class by the given method.
          *
          * @param clazz     the class of the handler
-         * @param regMethod registration method for the handler
+         * @param regMethod optional registration method for the handler
          * @return the next builder in the chain
          */
         public TargetFinishBuilder reg(Class<?> clazz, String regMethod) {
@@ -176,7 +176,7 @@ public class ActionBuilder<ViewT extends View> {
          * Helper method for registrations.
          *
          * @param clazz     the class of the handler
-         * @param regMethod registration method for the handler
+         * @param regMethod optional registration method for the handler
          * @return the next builder in the chain
          */
         public TargetFinishBuilder reg(Class<?> clazz, RegActionMethod regMethod) {
@@ -190,7 +190,7 @@ public class ActionBuilder<ViewT extends View> {
          * Setting a registration with multiple handler classes by the given method.
          *
          * @param classes   classes of the handlers
-         * @param regMethod registration method for the handler
+         * @param regMethod optional registration method for the handler
          * @return the next builder in the chain
          */
         public TargetFinishBuilder reg(Class<?>[] classes, RegActionMethod regMethod) {
