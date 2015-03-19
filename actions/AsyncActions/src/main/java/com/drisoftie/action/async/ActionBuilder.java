@@ -29,8 +29,9 @@ import java.util.List;
 /**
  * Builder Chain Pattern (also known as Fluent Pattern) implementation to get an {@link BaseAsyncAction}.
  * Facilitates creation of an {@link BaseAsyncAction} in a cascade like way.
- * <p/>
+ * <p>
  * Use this class in the following way:
+ * </p>
  * <pre>
  * {@code
  * new ActionBuilder<View>().with(view)                      // binding a view
@@ -236,6 +237,9 @@ public class ActionBuilder<ViewT extends View> {
 
         /**
          * Second needed constructor.
+         *
+         * @param builder the builder to set
+         * @param targets the view targets
          */
         public TargetFinishBuilder(BuilderWrapper builder, ViewT... targets) {
             super(builder, targets);

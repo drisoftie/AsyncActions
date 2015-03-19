@@ -1,12 +1,15 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 22
+    buildToolsVersion "22.0.0"
 
     defaultConfig {
         minSdkVersion 4
-        targetSdkVersion 21
+        targetSdkVersion 22
     }
 
     buildTypes {
@@ -15,8 +18,128 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
+    libraryVariants.all { variant ->
+        variant.outputs.each { output ->
+            def outputFile = output.outputFile
+            if (outputFile != null && outputFile.name.endsWith('.aar')) {
+                def fileName = "${archivesBaseName}-${version}.aar"
+                output.outputFile = new File(outputFile.parent, fileName)
+            }
+        }
+    }
 }
 
 dependencies {
     compile 'org.apache.commons:commons-lang3:3.2'
+}
+
+
+Properties uploadProperties = new Properties()
+uploadProperties.load(project.rootProject.file('upload.properties').newDataInputStream())
+Properties bintrayProperties = new Properties()
+bintrayProperties.load(project.rootProject.file('bintray.properties').newDataInputStream())
+
+import java.text.SimpleDateFormat;
+
+def releaseDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+def releaseDate = releaseDateFormat.parse("15/03/2015");
+def releaseVersion = uploadProperties.getProperty("bintray.version")
+group = uploadProperties.getProperty("bintray.group.id")
+//project.ext.set("archivesBaseName", uploadProperties.getProperty("project.default.name"));
+archivesBaseName = uploadProperties.getProperty("project.default.name");
+version = releaseVersion
+
+
+bintray {
+    user = bintrayProperties.getProperty("bintray.user")
+    key = bintrayProperties.getProperty("bintray.apikey")
+    publish = true
+    configurations = ['archives']
+    pkg {
+        repo = uploadProperties.getProperty("bintray.repo.name")
+        name = uploadProperties.getProperty("bintray.group.id")
+        desc = uploadProperties.getProperty("bintray.repo.desc")
+        websiteUrl = uploadProperties.getProperty("github.url")
+        issueTrackerUrl = uploadProperties.getProperty("github.issues")
+        vcsUrl = uploadProperties.getProperty("github.git.url")
+        licenses = ["Apache-2.0"]
+        labels = ['android', 'asynchronous', 'task', 'action', 'asynctask']
+        publicDownloadNumbers = true
+        version {
+            name = releaseVersion
+            desc = uploadProperties.getProperty("bintray.version.desc")
+            released = releaseDate
+            vcsTag = releaseVersion
+            attributes = ['gradle-plugin': uploadProperties.getProperty("bintray.group.id") + ":" +
+                    uploadProperties.getProperty("bintray.group.id") + ":" +
+                    uploadProperties.getProperty("project.default.name")]
+        }
+    }
+}
+
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+
+            artifactId = uploadProperties.getProperty("project.default.name")
+            groupId = uploadProperties.getProperty("bintray.group.id")
+
+            project {
+
+                packaging 'aar'
+
+                // Add your description here
+                name uploadProperties.getProperty("bintray.repo.desc")
+                url uploadProperties.getProperty("github.url")
+
+                // Set your license
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id bintrayProperties.getProperty("bintray.user")
+                        name uploadProperties.getProperty("project.author")
+                        email uploadProperties.getProperty("project.email")
+                    }
+                }
+                scm {
+                    connection uploadProperties.getProperty("github.git.url")
+                    developerConnection uploadProperties.getProperty("github.git.url")
+                    url uploadProperties.getProperty("github.url")
+
+                }
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+//    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+task findConventions << {
+    println project.getConvention()
 }

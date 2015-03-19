@@ -18,19 +18,9 @@ package com.drisoftie.action.async.android;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 
 import com.drisoftie.action.async.BaseAsyncAction;
-import com.sony.eu.stc.actions.BuildConfig;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Triple;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.List;
 
 /**
  * Dynamic {@link java.lang.reflect.Proxy} {@link java.lang.reflect.InvocationHandler} that intercepts interface callbacks of <b>any</b>
@@ -44,10 +34,10 @@ import java.util.List;
  * <li>The third step runs again in the UI Thread and is useful to clean up stuff after the heavy work is done or it can  show the user
  * an indicator that the work is finished.
  * </ol>
- * <p/>
+ * <p>
  * Additionally it provides ways to apply various tag information to facilitate data transfer between those steps and to help identifying
  * which action is invoked, if the implemented interface provided multiple action callbacks.
- * <p/>
+ * </p>
  * Use this class in the following way:
  * <pre>
  * {@code

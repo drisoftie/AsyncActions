@@ -57,7 +57,8 @@ public interface ISingleAsyncAction<ViewT, ResultT, Tag1T, Tag2T> extends IAsync
      * Returns the registered handler (implemented Java Interface) as an instance of the {@code clazz} argument of the first registered
      * {@link ViewT}.
      *
-     * @param clazz the class to cast to
+     * @param clazz      the class to cast to
+     * @param <HandlerT> the return type of the handler
      * @return the handler or {@code null}
      */
     <HandlerT> HandlerT getHandlerImpl(Class<HandlerT> clazz);
@@ -65,8 +66,9 @@ public interface ISingleAsyncAction<ViewT, ResultT, Tag1T, Tag2T> extends IAsync
     /**
      * Returns the registered handler (implemented Java Interface) as an instance of the {@code clazz} argument of the given {@link ViewT}.
      *
-     * @param view  the view the handler is bound to
-     * @param clazz the class to cast to
+     * @param view       the view the handler is bound to
+     * @param clazz      the class to cast to
+     * @param <HandlerT> the return type of the handler
      * @return the handler or {@code null}
      */
     <HandlerT> HandlerT getHandlerImpl(ViewT view, Class<HandlerT> clazz);
@@ -98,8 +100,7 @@ public interface ISingleAsyncAction<ViewT, ResultT, Tag1T, Tag2T> extends IAsync
      * return type is {@code void}).<br>
      * The reason is that the UI {@link Thread} should <b>NOT</b> be occupied, therefore the other callbacks do not run at the time of the
      * method invocation, but <b>afterwards</b>. <br>
-     * However <b>NOTE</b> that {@link #onActionPrepare(String, Object[], Object, Object, Object[])} <b>CAN</b> be invoked <b>OUTSIDE</b>
-     * the UI {@link Thread}.
+     * However <b>NOTE</b> that this method <b>CAN</b> be invoked <b>OUTSIDE</b> the UI {@link Thread}.
      *
      * @param methodName     the name of the invoked method
      * @param methodArgs     the arguments provided by the called method {@code methodName}
