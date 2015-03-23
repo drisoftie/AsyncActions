@@ -57,7 +57,13 @@ public enum RegActionMethod {
     /**
      * {@link android.view.View#setOnDragListener(android.view.View.OnDragListener)}
      */
-    SET_ONDRAGLISTENER("setOnDragListener");
+    SET_ONDRAGLISTENER("setOnDragListener"),
+
+
+    /**
+     * {@link android.widget.CompoundButton#setOnCheckedChangeListener(android.widget.CompoundButton.OnCheckedChangeListener)}
+     */
+    SET_ONCHECKEDCHANGELISTENER("setOnCheckedChangeListener");
 
     private String methodName;
 
