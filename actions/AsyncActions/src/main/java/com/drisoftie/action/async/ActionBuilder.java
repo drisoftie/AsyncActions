@@ -270,6 +270,7 @@ public class ActionBuilder<ViewT extends View> {
          */
         public TargetBuilder and(ViewT... views) {
             builder.currentTargetBuilder = new TargetBuilder(builder, views);
+            bindings.addAll(subBindings);
             subBindings = null;
             return builder.currentTargetBuilder;
         }
