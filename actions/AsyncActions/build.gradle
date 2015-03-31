@@ -31,3 +31,138 @@ android {
 dependencies {
     compile 'org.apache.commons:commons-lang3:3.2'
 }
+
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+def String getProjectProperty(String propertyName) {
+    String prop = "null"
+    if (hasProperty(propertyName)) {
+        prop = this.properties[propertyName]
+    }
+    return prop
+}
+
+import java.text.SimpleDateFormat;
+
+
+def authorName = "${getProjectProperty('project.author')}"
+def userName = "${getProjectProperty('bintray.user')}"
+
+def projectName = "${getProjectProperty('project.default.name')}"
+def projectContact = "${getProjectProperty('project.email')}"
+
+def bintrayRepoName = "${getProjectProperty('bintray.repo.name')}"
+def groupIdName = "${getProjectProperty('bintray.group.id')}"
+def repoDescr = "${getProjectProperty('bintray.repo.desc')}"
+def githubUrl = "${getProjectProperty('github.url')}"
+def issuesUrl = "${getProjectProperty('github.issues')}"
+def versioningUrl = "${getProjectProperty('github.git.url')}"
+def versionDescr = "${getProjectProperty('bintray.version.desc')}"
+
+def releaseDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+def releaseDate = releaseDateFormat.parse("15/03/2015");
+def releaseVersion = "${getProjectProperty('bintray.version')}";
+
+
+group = groupIdName
+//project.ext.set("archivesBaseName", uploadProperties.getProperty("project.default.name"));
+archivesBaseName = projectName
+version = releaseVersion
+description = repoDescr
+
+
+bintray {
+    user = userName
+    key = "${getProjectProperty('bintray.apikey')}"
+    publish = true
+    configurations = ['archives']
+    pkg {
+        repo = bintrayRepoName
+        name = groupIdName
+        desc = repoDescr
+        websiteUrl = githubUrl
+        issueTrackerUrl = issuesUrl
+        vcsUrl = versioningUrl
+        licenses = ["Apache-2.0"]
+        labels = ['android', 'asynchronous', 'task', 'action', 'asynctask']
+        publicDownloadNumbers = true
+        version {
+            name = releaseVersion
+            desc = versionDescr
+            released = releaseDate
+            vcsTag = releaseVersion
+            attributes = [projectName: groupIdName + ":" + groupIdName + ":" + projectName]
+        }
+    }
+}
+
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+
+            artifactId = projectName
+            groupId = groupIdName
+            version = releaseVersion
+            description repoDescr
+
+            project {
+
+                packaging 'aar'
+
+                artifactId = projectName
+                groupId = groupIdName
+                name projectName
+                description repoDescr
+                url githubUrl
+
+                // Set your license
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id userName
+                        name authorName
+                        email projectContact
+                    }
+                }
+                scm {
+                    connection versioningUrl
+                    developerConnection versioningUrl
+                    url githubUrl
+
+                }
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+//    source = android.sourceSets.main.java.srcDirs
+//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+task findConventions << {
+    println project.getConvention()
+}
