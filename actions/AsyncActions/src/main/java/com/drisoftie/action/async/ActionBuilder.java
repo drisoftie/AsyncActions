@@ -1,17 +1,17 @@
 /*
  * Copyright [2015] [Alexander Dridiger - drisoftie@gmail.com]
  *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *          http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
  */
 
 package com.drisoftie.action.async;
@@ -94,8 +94,8 @@ public class ActionBuilder<ViewT extends View> {
          * @param <Tag2T>   the type of the second tag
          * @return the new packed action, ready to use
          */
-        public <ResultT, Tag1T, Tag2T> BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> pack(
-                BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> action) {
+        public <ResultT, ProgressT, Tag1T, Tag2T> BaseAsyncAction<ViewT, ResultT, ProgressT, Tag1T, Tag2T> pack(
+                BaseAsyncAction<ViewT, ResultT, ProgressT, Tag1T, Tag2T> action) {
             action.registerAction(bindings);
             bindings = null;
             return action;
@@ -213,9 +213,8 @@ public class ActionBuilder<ViewT extends View> {
         public TargetFinishBuilder reg(Pair<Class<?>, RegActionMethod>... classRegPairs) {
             for (BaseAsyncAction.ActionBinding<ViewT> binding : subBindings) {
                 for (Pair<Class<?>, RegActionMethod> pair : classRegPairs) {
-                    binding.registrations.add(
-                            new MutableTriple<Class<?>, String, String[]>(
-                                    pair.getLeft(), pair.getRight().method(), null));
+                    binding.registrations.add(new MutableTriple<Class<?>, String, String[]>(pair.getLeft(), pair.getRight().method(),
+                                                                                            null));
                 }
             }
             return new TargetFinishBuilder().setBuilder(builder).setBindings(subBindings);
@@ -303,14 +302,15 @@ public class ActionBuilder<ViewT extends View> {
         /**
          * Pack all registered bindings into an action.
          *
-         * @param action    the action to pack everything into
-         * @param <ResultT> the type of the result
-         * @param <Tag1T>   the type of the first tag
-         * @param <Tag2T>   the type of the second tag
+         * @param action      the action to pack everything into
+         * @param <ResultT>   the type of the result
+         * @param <ProgressT> the type of the progress object
+         * @param <Tag1T>     the type of the first tag
+         * @param <Tag2T>     the type of the second tag
          * @return the new packed action, ready to use
          */
-        public <ResultT, Tag1T, Tag2T> BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> pack(
-                BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> action) {
+        public <ResultT, ProgressT, Tag1T, Tag2T> BaseAsyncAction<ViewT, ResultT, ProgressT, Tag1T, Tag2T> pack(
+                BaseAsyncAction<ViewT, ResultT, ProgressT, Tag1T, Tag2T> action) {
             bindings.addAll(subBindings);
             action.registerAction(bindings);
             bindings = null;

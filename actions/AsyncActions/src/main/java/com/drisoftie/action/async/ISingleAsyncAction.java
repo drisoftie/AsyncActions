@@ -1,18 +1,17 @@
 /*
- *  Copyright [2013-2015] [Alexander Dridiger - drisoftie@gmail.com]
- *  *
- *  *   Licensed under the Apache License, Version 2.0 (the "License");
- *  *   you may not use this file except in compliance with the License.
- *  *   You may obtain a copy of the License at
- *  *
- *  *       http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  *   Unless required by applicable law or agreed to in writing, software
- *  *   distributed under the License is distributed on an "AS IS" BASIS,
- *  *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  *   See the License for the specific language governing permissions and
- *  *   limitations under the License.
+ * Copyright [2015] [Alexander Dridiger - drisoftie@gmail.com]
  *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
  */
 package com.drisoftie.action.async;
 
@@ -24,7 +23,7 @@ import java.util.List;
  *
  * @author Alexander Dridiger
  */
-public interface ISingleAsyncAction<ViewT, ResultT, Tag1T, Tag2T> extends IAsyncAction<ViewT> {
+public interface ISingleAsyncAction<ViewT, ResultT, ProgressT, Tag1T, Tag2T> extends IAsyncAction<ViewT> {
 
     /**
      * Possibility to register and implement an action.
@@ -124,6 +123,27 @@ public interface ISingleAsyncAction<ViewT, ResultT, Tag1T, Tag2T> extends IAsync
      * {@link #onActionAfterWork(String, Object[], Object, Object, Object, Object[])}
      */
     ResultT onActionDoWork(String methodName, Object[] methodArgs, Tag1T tag1, Tag2T tag2, Object[] additionalTags);
+
+    /**
+     * Post a progress on the UI {@link Thread}.
+     *
+     * @param progress   progress to post
+     * @param methodName the name of the invoked method
+     * @param methodArgs the arguments provided by the called method {@code methodName}
+     */
+    void postActionProgress(ProgressT progress, String methodName, Object[] methodArgs);
+
+    /**
+     * Post a progess on UI {@link Thread} during work.
+     *
+     * @param methodName     the name of the invoked method
+     * @param progress       the posted progress
+     * @param methodArgs     the arguments provided by the called method {@code methodName}
+     * @param tag1           optional tag
+     * @param tag2           optional tag
+     * @param additionalTags optional additional tags
+     */
+    void onActionProgress(String methodName, ProgressT progress, Object[] methodArgs, Tag1T tag1, Tag2T tag2, Object[] additionalTags);
 
     /**
      * Possibility to clean up <b>after</b> asynchronous work. Runs on UI {@link Thread}.

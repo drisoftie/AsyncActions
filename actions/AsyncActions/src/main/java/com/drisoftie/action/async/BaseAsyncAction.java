@@ -1,18 +1,17 @@
 /*
- *  Copyright [2013-2015] [Alexander Dridiger - drisoftie@gmail.com]
- *  *
- *  *   Licensed under the Apache License, Version 2.0 (the "License");
- *  *   you may not use this file except in compliance with the License.
- *  *   You may obtain a copy of the License at
- *  *
- *  *       http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  *   Unless required by applicable law or agreed to in writing, software
- *  *   distributed under the License is distributed on an "AS IS" BASIS,
- *  *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  *   See the License for the specific language governing permissions and
- *  *   limitations under the License.
+ * Copyright [2015] [Alexander Dridiger - drisoftie@gmail.com]
  *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
  */
 package com.drisoftie.action.async;
 
@@ -147,15 +146,15 @@ import java.util.List;
  *
  * @author Alexander Dridiger
  */
-public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements ISingleAsyncAction<ViewT, ResultT, Tag1T, Tag2T>,
-        InvocationHandler {
+public abstract class BaseAsyncAction<ViewT, ResultT, ProgressT, Tag1T, Tag2T>
+        implements ISingleAsyncAction<ViewT, ResultT, ProgressT, Tag1T, Tag2T>, InvocationHandler {
 
-    protected Tag1T tag1;
-    protected Tag2T tag2;
-    protected Object[] tags;
+    protected Tag1T                      tag1;
+    protected Tag2T                      tag2;
+    protected Object[]                   tags;
     protected List<ActionBinding<ViewT>> bindings;
 
-    protected boolean runWorkThread = true;
+    protected boolean runWorkThread  = true;
     protected boolean skipWorkThread = false;
 
     protected List<ActionThread> actionThreads = Collections.synchronizedList(new ArrayList<ActionThread>());
@@ -578,7 +577,7 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        Object result = null;
+        Object result     = null;
         String methodName = method.getName();
         for (ActionBinding<ViewT> binding : bindings) {
             if (proxy == binding.actionHandler) {
@@ -658,6 +657,36 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
         return result;
     }
 
+
+    @Override
+    public void postActionProgress(ProgressT progress, String methodName, Object[] methodArgs) {
+        Runnable runner = new Runnable() {
+
+            private String methodName;
+            private ProgressT progress;
+            private Object[] methodArgs;
+
+            public Runnable init(String methodName, ProgressT progress, Object[] methodArgs) {
+                this.methodName = methodName;
+                this.progress = progress;
+                this.methodArgs = methodArgs;
+                return this;
+            }
+
+            @Override
+            public void run() {
+                BaseAsyncAction.this.onActionProgress(methodName, progress, methodArgs, tag1, tag2, tags);
+            }
+        }.init(methodName, progress, methodArgs);
+        invokeRunnableOnUiThread(runner);
+    }
+
+    @Override
+    public void onActionProgress(String methodName, ProgressT progress, Object[] methodArgs, Tag1T tag1, Tag2T tag2,
+                                 Object[] additionalTags) {
+        // base impl
+    }
+
     @Override
     public void cancelActions() {
         for (ActionThread action : actionThreads) {
@@ -677,36 +706,6 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
         tag1 = null;
         tag2 = null;
         tags = null;
-    }
-
-    /**
-     * Thread doing the actual work.
-     *
-     * @author Alexander Dridiger
-     */
-    public class ActionThread extends BaseRunThread {
-
-        private IFinishedHandler<ResultT> handler;
-        private String methodName;
-        private Object[] methodArgs;
-
-        public ActionThread(IFinishedHandler<ResultT> handler, String methodName, Object[] methodArgs) {
-            this.handler = handler;
-            this.methodName = methodName;
-            this.methodArgs = methodArgs;
-        }
-
-        @Override
-        public void run() {
-            ResultT result = null;
-            if (isRunning()) {
-                result = onActionDoWork(methodName, methodArgs, tag1, tag2, tags);
-            }
-            if (isRunning()) {
-                handler.onFinished(result);
-            }
-            BaseAsyncAction.this.actionThreads.remove(this);
-        }
     }
 
     /**
@@ -731,10 +730,10 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
      * @param <ViewT> generic parameter for the view type to bind an action handler
      */
     protected static class ActionBinding<ViewT> {
-        protected ViewT view;
+        protected ViewT  view;
         protected Object actionHandler;
-        protected List<Triple<Class<?>, String, String[]>> registrations = new ArrayList<>();
-        protected boolean hasInvokeLimitations = false;
+        protected List<Triple<Class<?>, String, String[]>> registrations        = new ArrayList<>();
+        protected boolean                                  hasInvokeLimitations = false;
 
         /**
          * Setter for the view.
@@ -745,6 +744,36 @@ public abstract class BaseAsyncAction<ViewT, ResultT, Tag1T, Tag2T> implements I
         public ActionBinding<ViewT> setView(ViewT view) {
             this.view = view;
             return this;
+        }
+    }
+
+    /**
+     * Thread doing the actual work.
+     *
+     * @author Alexander Dridiger
+     */
+    public class ActionThread extends BaseRunThread {
+
+        private IFinishedHandler<ResultT> handler;
+        private String                    methodName;
+        private Object[]                  methodArgs;
+
+        public ActionThread(IFinishedHandler<ResultT> handler, String methodName, Object[] methodArgs) {
+            this.handler = handler;
+            this.methodName = methodName;
+            this.methodArgs = methodArgs;
+        }
+
+        @Override
+        public void run() {
+            ResultT result = null;
+            if (isRunning()) {
+                result = onActionDoWork(methodName, methodArgs, tag1, tag2, tags);
+            }
+            if (isRunning()) {
+                handler.onFinished(result);
+            }
+            BaseAsyncAction.this.actionThreads.remove(this);
         }
     }
 }
