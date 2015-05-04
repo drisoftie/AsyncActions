@@ -15,6 +15,8 @@
  */
 package com.drisoftie.action.async;
 
+import android.view.View;
+
 /**
  * Convenient Enum to prevent using plain {@link String}s for naming common action registration methods (like <b>setOnClickListener</b>;
  * encapsulating their names.
@@ -58,11 +60,15 @@ public enum RegActionMethod {
      */
     SET_ONDRAGLISTENER("setOnDragListener"),
 
-
     /**
      * {@link android.widget.CompoundButton#setOnCheckedChangeListener(android.widget.CompoundButton.OnCheckedChangeListener)}
      */
     SET_ONCHECKEDCHANGELISTENER("setOnCheckedChangeListener"),
+
+    /**
+     * {@link android.view.View#setOnTouchListener(View.OnTouchListener)}
+     */
+    SET_ONTOUCH("setOnTouchListener"),
 
     /**
      * No method.

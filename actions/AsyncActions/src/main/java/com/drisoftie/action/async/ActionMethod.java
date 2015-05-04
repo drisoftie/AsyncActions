@@ -15,6 +15,9 @@
  */
 package com.drisoftie.action.async;
 
+import android.view.MotionEvent;
+import android.view.View;
+
 /**
  * Convenient Enum to prevent using plain {@link String}s for naming common action methods, encapsulating their names.
  *
@@ -32,6 +35,11 @@ public enum ActionMethod {
      * {@link android.view.View.OnLongClickListener#onLongClick(android.view.View)}
      */
     ON_LONG_CLICK("onLongClick"),
+
+    /**
+     * {@link android.view.View.OnTouchListener#onTouch(View, MotionEvent)}
+     */
+    ON_TOUCH("onTouch"),
 
     /**
      * {@link android.widget.AdapterView.OnItemClickListener#onItemClick(android.widget.AdapterView, android.view.View, int, long)}
